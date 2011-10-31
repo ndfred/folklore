@@ -3,6 +3,7 @@ import urllib
 import urlparse
 import os.path
 import datetime
+import codecs
 
 
 MONTHS = {
@@ -65,10 +66,10 @@ for story_filename in stories_filenames:
         print 'Downloading %s' % story_filename
         data = urllib2.urlopen(url).read()
 
-        with open(story_filename, 'w') as story_file:
+        with codecs.open(story_filename, 'w', 'utf8') as story_file:
             story_file.write(data)
     else:
-        with open(story_filename) as story_file:
+        with codecs.open(story_filename, 'r', 'utf8') as story_file:
             data = story_file.read()
 
     data = data.replace('\r\n', '\n')
