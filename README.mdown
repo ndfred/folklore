@@ -1,0 +1,6 @@
+Folklore
+========
+
+Making an ePub out of the [folklore.org](http://folklore.org/index.py) Website by downloading, parsing and reformating its content files.
+
+Shouldn't be as pretty as the [Revolution in The Valley](http://shop.oreilly.com/product/9780596007195.do) book, but iBooks should handle it better.
