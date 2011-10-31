@@ -115,6 +115,12 @@ for story_filename in stories_filenames:
         stripped_line = line.strip()
 
         if stripped_line != '':
+            # [image:polaroids/polaroids.1.jpg]
+            # [image:bomb_icon.jpg::hspace=12 vspace=12 align=left]
+            # [story:Round Rects Are Everywhere!]
+            # [image:early_macpaint.jpg:An early screenshot of a half-implemented MacPaint]
+            # [image:mousepaint.jpg:Bill Budge's MousePaint:align=left hspace=8]
+            # [link:here.:http//www.amazon.com/exec/obidos/asin/0596007191/ref=nosim/folklore-20]
             html_content_lines.append('<p>%s</p>' % stripped_line)
 
     story['Content'] = content
