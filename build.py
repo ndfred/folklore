@@ -73,22 +73,76 @@ def fetch_stories():
     return stories_filenames
 
 
+def local_image_filename(image_filename):
+    return image_filename.replace('/', ' - ')
+
+
+def parse_story_content_tag(tag, content):
+    components = content.split(':')
+    components_count = len(components)
+
+    if tag == 'image':
+        image_filename = components[0]
+        components[0] = urllib.quote(local_image_filename(components[0]))
+
+        if components_count == 1:
+            return '<img src="%s">' % content, image_filename
+        elif components_count == 2:
+            return '<img src="%s" title="%s">' % tuple(components), image_filename
+        elif components_count == 3:
+            return '<img src="%s" title="%s" style="%s">' % tuple(components), image_filename
+        else:
+            raise Exception('Wrong arguments for an image tag: %s', content)
+    elif tag == 'story':
+        if components_count == 1:
+            return '<a href="%s.html">%s</a>' % (content, urllib.quote(content))
+        else:
+            raise Exception('Wrong arguments for a story tag: %s', content)
+    elif tag == 'link':
+        if components_count == 2:
+            return '<a href="%s">%s</a>' % (components[1], components[0])
+        else:
+            raise Exception('Wrong arguments for a link tag: %s', content)
+
+
 def parse_story_content(content):
     html_content_lines = []
+    image_filenames = set()
 
     for line in content.split('\n'):
-        stripped_line = line.strip()
+        line = line.strip()
 
-        if stripped_line != '':
-            # [image:polaroids/polaroids.1.jpg]
-            # [image:bomb_icon.jpg::hspace=12 vspace=12 align=left]
-            # [story:Round Rects Are Everywhere!]
-            # [image:early_macpaint.jpg:An early screenshot of a half-implemented MacPaint]
-            # [image:mousepaint.jpg:Bill Budge's MousePaint:align=left hspace=8]
-            # [link:here.:http//www.amazon.com/exec/obidos/asin/0596007191/ref=nosim/folklore-20]
-            html_content_lines.append('<p>%s</p>' % stripped_line)
+        if line != '':
+            for tag in ['image', 'story', 'link']:
+                start_tag = '[%s:' % tag
+                end_tag = ']'
+                components = []
+                start = line.find(start_tag)
 
-    return '\n\n'.join(html_content_lines)
+                while start != -1:
+                    if start > 0:
+                        components.append(line[:start - 1])
+
+                    line = line[start + len(start_tag):]
+                    end = line.find(end_tag)
+                    html = None
+
+                    if tag == 'image':
+                        html, image_filename = parse_story_content_tag(tag, line[:end])
+                        image_filenames.add(image_filename)
+                    else:
+                        html = parse_story_content_tag(tag, line[:end])
+
+                    components.append(html)
+                    line = line[end + len(end_tag):]
+                    start = line.find(start_tag)
+
+                components.append(line)
+                line = ''.join(components)
+
+            html_content_lines.append('<p>%s</p>' % line)
+
+    return '\n\n'.join(html_content_lines), image_filenames
 
 
 def parse_story(data):
@@ -120,7 +174,9 @@ def parse_story(data):
         image_filenames.add(story['Image'])
 
     story['Content'] = content
-    story['HTMLContent'] = parse_story_content(content)
+    story['HTMLContent'], content_image_filenames = parse_story_content(content)
+
+    image_filenames.update(content_image_filenames)
 
     return story, image_filenames
 
@@ -155,10 +211,12 @@ def parse_stories(stories_filenames):
 
 def download_images(image_filenames):
     for image_filename in image_filenames:
-        if not os.path.exists(image_filename):
+        local_filename = local_image_filename(image_filename)
+
+        if not os.path.exists(local_filename):
             print 'Downloading %s' % image_filename
 
-            with open(image_filename, 'w') as image_file:
+            with open(local_filename, 'w') as image_file:
                 url = 'http://folklore.org/projects/Macintosh/images/%s' % urllib.quote(image_filename)
                 image_file.write(urllib2.urlopen(url).read())
 
