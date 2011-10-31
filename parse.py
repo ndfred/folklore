@@ -84,15 +84,15 @@ for story_filename in stories_filenames:
 
     date = story['Date']
     if date == 'undated':
-        story['Date'] = datetime.date(1990, 1, 1)
+        story['ParsedDate'] = datetime.date(1990, 1, 1)
     else:
         date_components = date.split(' ')
 
         if len(date_components) == 1:
-            story['Date'] = datetime.date(int(date), 6, 1)
+            story['ParsedDate'] = datetime.date(int(date), 6, 1)
         else:
             month, year = date_components
-            story['Date'] = datetime.date(int(year), MONTHS[month], 2)
+            story['ParsedDate'] = datetime.date(int(year), MONTHS[month], 2)
 
     for key in ['Characters', 'Topics']:
         if story.has_key(key):
@@ -111,14 +111,7 @@ for story_filename in stories_filenames:
     story['Content'] = content
     stories.append(story)
 
-for story in sorted(stories, key=lambda story: story['Date']):
-    date = story['Date']
-    if date == datetime.date(1990, 1, 1):
-        date = 'unknown'
-    elif date.day == 1:
-        date = str(date.year)
-    else:
-        month = [month for month, index in MONTHS.iteritems() if index == date.month][0]
-        date = '%s %d' % (month, date.year)
+    stories.append(story)
 
-    print '%s (%s)' % (story['Title'], date)
+for story in sorted(stories, key=lambda story: story['ParsedDate']):
+    print '%s (%s)' % (story['Title'], story['Date'])
