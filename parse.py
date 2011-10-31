@@ -109,8 +109,16 @@ for story_filename in stories_filenames:
                 url = 'http://folklore.org/projects/Macintosh/images/%s' % urllib.quote(image_filename)
                 image_file.write(urllib2.urlopen(url).read())
 
+    html_content_lines = []
+
+    for line in content.split('\n'):
+        stripped_line = line.strip()
+
+        if stripped_line != '':
+            html_content_lines.append('<p>%s</p>' % stripped_line)
+
     story['Content'] = content
-    stories.append(story)
+    story['HTMLContent'] = '\n\n'.join(html_content_lines)
 
     stories.append(story)
 
