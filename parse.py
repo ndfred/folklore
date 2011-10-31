@@ -61,7 +61,7 @@ for story_filename in stories_filenames:
     data = None
 
     if not os.path.exists(story_filename):
-        url = 'http://www.folklore.org/projects/Macintosh/%s' % urllib.quote_plus(story_filename)
+        url = 'http://www.folklore.org/projects/Macintosh/%s' % urllib.quote(story_filename)
         print 'Downloading %s' % story_filename
         data = urllib2.urlopen(url).read()
 
@@ -97,6 +97,16 @@ for story_filename in stories_filenames:
     for key in ['Characters', 'Topics']:
         if story.has_key(key):
             story[key] = story[key].split(',')
+
+    if story.has_key('Image'):
+        image_filename = story['Image']
+
+        if not os.path.exists(image_filename):
+            print 'Downloading %s' % image_filename
+
+            with open(image_filename, 'w') as image_file:
+                url = 'http://folklore.org/projects/Macintosh/images/%s' % urllib.quote(image_filename)
+                image_file.write(urllib2.urlopen(url).read())
 
     story['Content'] = content
     stories.append(story)
