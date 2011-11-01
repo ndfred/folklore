@@ -77,7 +77,7 @@ def local_image_filename(image_filename):
     return image_filename.replace('/', ' - ')
 
 
-def parse_story_content_tag(tag, content):
+def parse_story_content_tag(tag, content, stories_urls):
     components = content.split(':')
     components_count = len(components)
 
@@ -86,16 +86,31 @@ def parse_story_content_tag(tag, content):
         components[0] = urllib.quote(local_image_filename(components[0]))
 
         if components_count == 1:
-            return '<img src="%s">' % content, image_filename
+            return '<div class="image"><img src="%s"></div>' % components[0], image_filename
         elif components_count == 2:
-            return '<img src="%s" title="%s">' % tuple(components), image_filename
+            return '<div class="image"><img src="%s"><p>%s</p></div>' % tuple(components), image_filename
         elif components_count == 3:
-            return '<img src="%s" title="%s" style="%s">' % tuple(components), image_filename
+            css_class = ''
+            description = ''
+
+            if components[2].startswith('align=left'):
+                css_class = ' float-left'
+
+            if components[1] != '':
+                description = '<p>%s</p>' % components[1]
+
+            return '<div class="image%s"><img src="%s">%s</div>' % (css_class, components[0], description), image_filename
         else:
             raise Exception('Wrong arguments for an image tag: %s', content)
     elif tag == 'story':
         if components_count == 1:
-            return '<a href="%s.html">%s</a>' % (content, urllib.quote(content))
+            content = content.strip()
+
+            if stories_urls.has_key(content):
+                return '(see <a href="%s">%s</a>)' % (urllib.quote(stories_urls[content]), content)
+            else:
+                print 'Could not find the story to link to: %s' % repr(content)
+                return ''
         else:
             raise Exception('Wrong arguments for a story tag: %s', content)
     elif tag == 'link':
@@ -105,9 +120,16 @@ def parse_story_content_tag(tag, content):
             raise Exception('Wrong arguments for a link tag: %s', content)
 
 
-def parse_story_content(content):
+def parse_story_content(story, stories_urls):
+    content = story['Content']
     html_content_lines = []
     image_filenames = set()
+
+    if story.has_key('Image'):
+        if story.has_key('Caption'):
+            content = '%s%s' % ('[image:%s:%s:align=left]' % (story['Image'], story['Caption']), content)
+        else:
+            content = '%s%s' % ('[image:%s::align=left]' % story['Image'], content)
 
     for line in content.split('\n'):
         line = line.strip()
@@ -121,17 +143,17 @@ def parse_story_content(content):
 
                 while start != -1:
                     if start > 0:
-                        components.append(line[:start - 1])
+                        components.append(line[:start])
 
                     line = line[start + len(start_tag):]
                     end = line.find(end_tag)
                     html = None
 
                     if tag == 'image':
-                        html, image_filename = parse_story_content_tag(tag, line[:end])
+                        html, image_filename = parse_story_content_tag(tag, line[:end], stories_urls)
                         image_filenames.add(image_filename)
                     else:
-                        html = parse_story_content_tag(tag, line[:end])
+                        html = parse_story_content_tag(tag, line[:end], stories_urls)
 
                     components.append(html)
                     line = line[end + len(end_tag):]
@@ -147,7 +169,7 @@ def parse_story_content(content):
 
 def parse_story(data):
     story = {}
-    image_filenames = set()
+    image_filename = None
     header, content = data.split('\n\n', 1)
 
     for line in header.split('\n'):
@@ -171,18 +193,16 @@ def parse_story(data):
             story[key] = frozenset(story[key].split(','))
 
     if story.has_key('Image'):
-        image_filenames.add(story['Image'])
+        image_filename = story['Image']
 
     story['Content'] = content
-    story['HTMLContent'], content_image_filenames = parse_story_content(content)
 
-    image_filenames.update(content_image_filenames)
-
-    return story, image_filenames
+    return story, image_filename
 
 
 def parse_stories(stories_filenames):
     stories = []
+    stories_urls = {}
     image_filenames = set()
 
     for story_filename in stories_filenames:
@@ -201,10 +221,19 @@ def parse_stories(stories_filenames):
 
         data = data.replace('\r\n', '\n')
 
-        story, story_image_filenames = parse_story(data)
-        image_filenames.update(story_image_filenames)
+        story, story_image_filename = parse_story(data)
+        story['Filename'] = story_filename
+        story['URL'] = '%s.html' % story['Filename'][:-4]
 
+        if story_image_filename:
+            image_filenames.add(story_image_filename)
+
+        stories_urls[story['Title']] = story['URL']
         stories.append(story)
+
+    for story in stories:
+        story['HTMLContent'], content_image_filenames = parse_story_content(story, stories_urls)
+        image_filenames.update(content_image_filenames)
 
     return stories, image_filenames
 
@@ -227,8 +256,24 @@ def build_book():
     stories, image_filenames = parse_stories(stories_filenames)
     download_images(image_filenames)
 
+    template = None
+    stories_html_components = []
+
+    with codecs.open('folklore.tpl', 'r', 'utf8') as template_file:
+        template = template_file.read()
+
     for story in sorted(stories, key=lambda story: story['ParsedDate']):
-        print ' * %s (%s)' % (story['Title'], story['Date'])
+        print ' * %(Title)s (%(Date)s)' % story
+        stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
+
+        with codecs.open(story['URL'], 'w', 'utf8') as story_html_file:
+            story_html_file.write(template % story)
+
+    with codecs.open('Stories.html', 'w', 'utf8') as stories_html_file:
+        stories_html_file.write(template % {
+            'Title': 'folklore.org',
+            'HTMLContent': '<p>%s</p>' % '\n'.join(stories_html_components)
+        })
 
 
 if __name__ == '__main__':
