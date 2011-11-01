@@ -15,9 +15,11 @@
 	</dict>
 	<key>itemName</key>
 	<string>Revolution in The Valley</string>
-	<key>releaseDate</key>
-	<string>2011</string>
 	<key>sort-artist</key>
 	<string>Hertzfeld, Andy</string>
+	<key>genre</key>
+	<string>Careers</string>
+	<key>genreId</key>
+	<integer>10010</integer>
 </dict>
 </plist>

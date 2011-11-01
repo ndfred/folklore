@@ -5,6 +5,9 @@ import os.path
 import datetime
 import codecs
 import zipfile
+import plistlib
+import hashlib
+import datetime
 
 
 MONTHS = {
@@ -294,6 +297,7 @@ def build_epub(stories, image_filenames):
     files_entries = []
     book_entries = []
     toc_extended_entries = []
+    index_file_hash = None
 
     with codecs.open('Cover.html', 'w', 'utf8') as cover_file:
         with codecs.open('folklore.tpl', 'r', 'utf8') as cover_template_file:
@@ -333,10 +337,12 @@ def build_epub(stories, image_filenames):
         with codecs.open('content.opf.tpl', 'r', 'utf8') as index_template_file:
             index_template = index_template_file.read()
 
-        index_file.write(index_template % {
+        index_file_data = index_template % {
             'files': '\n\t\t'.join(files_entries),
             'toc': '\n\t\t'.join(book_entries),
-        })
+        }
+        index_file_hash = hashlib.md5(index_file_data).hexdigest().upper()
+        index_file.write(index_file_data)
 
     with codecs.open('toc.ncx', 'w', 'utf8') as toc_file:
         with codecs.open('toc.ncx.tpl', 'r', 'utf8') as toc_template_file:
@@ -347,7 +353,12 @@ def build_epub(stories, image_filenames):
         })
 
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
-        epub_file.write('iTunesMetadata.plist')
+        current_date = datetime.datetime.now()
+        itunes_plist = plistlib.readPlist('iTunesMetadata.plist')
+        itunes_plist['book-info']['package-file-hash'] = index_file_hash
+        itunes_plist['year'] = current_date.year
+        itunes_plist['releaseDate'] = current_date
+        epub_file.writestr('iTunesMetadata.plist', plistlib.writePlistToString(itunes_plist))
         epub_file.writestr('mimetype', 'application/epub+zip')
 
         for filename in ['container.xml', 'com.apple.ibooks.display-options.xml']:
