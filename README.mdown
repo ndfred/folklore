@@ -1,6 +1,20 @@
 Folklore
 ========
 
-Making an ePub out of the [folklore.org](http://folklore.org/index.py) Website by downloading, parsing and reformating its content files.
+Build an ePub out of the [folklore.org](http://folklore.org/index.py) Website by downloading, parsing and reformating its content files.
 
-Shouldn't be as pretty as the [Revolution in The Valley](http://shop.oreilly.com/product/9780596007195.do) book, but iBooks should handle it better.
+I got frustated reading [Revolution in The Valley](http://shop.oreilly.com/product/9780596007195.do) as a PDF file in iBooks: even though the editing looks great on paper, the text is fuzzy and small on the iPhone and iPad and zooming in/out in painful.
+
+Run the build.py script to download the data and generate the ePub file:
+
+    $ python build.py
+    Parsing 119 stories
+    Generating HTML files
+    Generating ePub file
+    Generated Revolution_in_The_Valley.epub
+
+Script has been tested with python 2.7 on Mac OS X Lion.
+It should be working on Windows and Linux as long as you have python installed.
+
+See the issues for the last glitches to fix, mostly source files encoding issues.
+iBooks is very frustrating to work with when it comes to CSS formatting, some glitches may appear there as well.
