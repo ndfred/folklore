@@ -1,7 +1,17 @@
 body {
 	font-family: Georgia;
-	padding: 0.4em 2em 1em 2em;
-	margin: 0em 0em 0em 0em;
+	font-size: 1.1em;
+	line-height: 1.2em;
+	text-rendering: optimizeLegibility;
+	-webkit-text-size-adjust:none;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1 {
+	font-size: 2.5em;
+	line-height: 1.1em;
+	margin-top: 0;
+	-webkit-hyphens: none;
 }
 
 a {
@@ -29,18 +39,24 @@ div.cover {
 
 div.cover img {
 	max-width: 100%;
+	max-height: 100%;
+	clear: both;
+	page-break-inside: avoid;
 }
 
 div.image {
+	text-align: center;
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 90%;
+	max-height: 90%;
 	padding: 0.5em 1em 0.5em 1em;
 }
 
 div.float-left {
 	float: left;
-	max-width: 25%;
+	max-width: 35%;
+	max-height: 100%;
 	padding: 0.3em 1.5em 1em 0em;
 	clear: both;
 }
@@ -49,6 +65,9 @@ div.image img {
 	border-radius: 7px;
 	box-shadow: 3px 3px 7px #666666;
 	max-width: 100%;
+	max-height: 100%;
+	clear: both;
+	page-break-inside: avoid;
 }
 
 div.image p {
@@ -57,4 +76,13 @@ div.image p {
 	font-weight: bold;
 	padding: 0.4em 0em 0em 0em;
 	margin: 0em 0em 0em 0em;
+}
+
+@media all and (max-width: 500px) {
+	div.float-left {
+		float: none;
+		display: block;
+		max-width: 100%;
+		max-height: 100%;
+	}
 }
