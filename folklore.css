@@ -1,6 +1,5 @@
 body {
 	font-family: Georgia;
-	font-size: 11pt;
 	padding: 0.4em 2em 1em 2em;
 	margin: 0em 0em 0em 0em;
 }
@@ -21,6 +20,15 @@ hr {
 p.footer {
 	text-align: center;
 	padding: 1em 0em 0.5em 0em;
+}
+
+div.cover {
+	width: 100%;
+	text-align: center;
+}
+
+div.cover img {
+	max-width: 100%;
 }
 
 div.image {

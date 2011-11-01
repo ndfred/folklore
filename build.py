@@ -291,13 +291,25 @@ def build_html(stories, add_footer=False):
 
 
 def build_epub(stories, image_filenames):
-    index_entries = []
-    toc_entries = []
+    files_entries = []
+    book_entries = []
     toc_extended_entries = []
 
+    with codecs.open('Cover.html', 'w', 'utf8') as cover_file:
+        with codecs.open('folklore.tpl', 'r', 'utf8') as cover_template_file:
+            cover_template = cover_template_file.read()
+
+        cover_file.write(cover_template % {
+            'Title': '',
+            'HTMLContent': '<div class="cover"><img src="revolution.jpg"></div>',
+        })
+
+        files_entries.append('<item id="cover" href="Cover.html" media-type="text/html"/>')
+        book_entries.append('<itemref idref="cover"/>')
+
     for story in stories:
-        index_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="text/html"/>' % story)
-        toc_entries.append('<itemref idref="%s"/>' % story['Identifier'])
+        files_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="text/html"/>' % story)
+        book_entries.append('<itemref idref="%s"/>' % story['Identifier'])
         toc_extended_entries.append(
             '<navPoint id="%(Identifier)s" playOrder="%(Index)s">\n'
             '			<navLabel>\n'
@@ -315,15 +327,15 @@ def build_epub(stories, image_filenames):
             mime_type = 'image/%s' % image_filename[-3:]
 
         image_filename = local_image_filename(image_filename)
-        index_entries.append('<item id="%s" href="%s" media-type="%s"/>' % (image_filename, image_filename, mime_type))
+        files_entries.append('<item id="%s" href="%s" media-type="%s"/>' % (image_filename, image_filename, mime_type))
 
     with codecs.open('content.opf', 'w', 'utf8') as index_file:
         with codecs.open('content.opf.tpl', 'r', 'utf8') as index_template_file:
             index_template = index_template_file.read()
 
         index_file.write(index_template % {
-            'files': '\n\t\t'.join(index_entries),
-            'toc': '\n\t\t'.join(toc_entries),
+            'files': '\n\t\t'.join(files_entries),
+            'toc': '\n\t\t'.join(book_entries),
         })
 
     with codecs.open('toc.ncx', 'w', 'utf8') as toc_file:
@@ -337,13 +349,14 @@ def build_epub(stories, image_filenames):
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
         epub_file.write('iTunesMetadata.plist')
         epub_file.writestr('mimetype', 'application/epub+zip')
-        epub_file.write('revolution.jpg', 'iTunesArtwork')
 
         for filename in ['container.xml', 'com.apple.ibooks.display-options.xml']:
             epub_file.write(filename, os.path.join('META-INF', filename))
 
-        for filename in ['toc.ncx', 'content.opf']:
+        for filename in ['toc.ncx', 'content.opf', 'folklore.css']:
             epub_file.write(filename, os.path.join('content', filename))
+
+        epub_file.write('Cover.html', os.path.join('content', 'Cover.html'))
 
         for story in stories:
             epub_file.write(story['HTMLFilename'], os.path.join('content', story['HTMLFilename']))
