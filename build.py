@@ -113,7 +113,7 @@ def parse_story_content_tag(tag, content, stories_urls):
             content = content.strip()
 
             if stories_urls.has_key(content):
-                return '(see <a href="%s">%s</a>)' % (urllib.quote(stories_urls[content]), content)
+                return '(see <a href="%s">%s</a>)' % (stories_urls[content], content)
             else:
                 print 'Could not find the story to link to: %s' % repr(content)
                 return ''
