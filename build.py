@@ -252,7 +252,7 @@ def download_images(image_filenames):
                 image_file.write(urllib2.urlopen(url).read())
 
 
-def build_html(stories):
+def build_html(stories, add_footer=False):
     template = None
     stories_html_components = []
 
@@ -263,19 +263,21 @@ def build_html(stories):
         story = stories[story_index]
         story['Index'] = str(story_index + 1)
         story['Identifier'] = 'story-%s' % story['Index']
-        footer_components = []
 
-        if story_index > 0:
-            footer_components.append('&lt; <a href="%(URL)s">%(Title)s</a>' % stories[story_index - 1])
+        if add_footer:
+            footer_components = []
 
-        footer_components.append('<a href="Stories.html">Back to the stories</a>')
+            if story_index > 0:
+                footer_components.append('&lt; <a href="%(URL)s">%(Title)s</a>' % stories[story_index - 1])
 
-        if story_index < len(stories) - 1:
-            footer_components.append('<a href="%(URL)s">%(Title)s</a> &gt;' % stories[story_index + 1])
+            footer_components.append('<a href="Stories.html">Back to the stories</a>')
 
-        print ' * %(Title)s (%(Date)s)' % story
-        story = story.copy()
-        story['HTMLContent'] += '\n\n<p class="footer">%s</p>' % ' - '.join(footer_components)
+            if story_index < len(stories) - 1:
+                footer_components.append('<a href="%(URL)s">%(Title)s</a> &gt;' % stories[story_index + 1])
+
+            story = story.copy()
+            story['HTMLContent'] += '\n\n<p class="footer">%s</p>' % ' - '.join(footer_components)
+
         stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
 
         with codecs.open(story['HTMLFilename'], 'w', 'utf8') as story_html_file:
@@ -334,9 +336,14 @@ def build_epub(stories, image_filenames):
 
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
         epub_file.write('iTunesMetadata.plist')
+        epub_file.writestr('mimetype', 'application/epub+zip')
+        epub_file.write('revolution.jpg', 'iTunesArtwork')
+
+        for filename in ['container.xml', 'com.apple.ibooks.display-options.xml']:
+            epub_file.write(filename, os.path.join('META-INF', filename))
 
         for filename in ['toc.ncx', 'content.opf']:
-            epub_file.write(filename, os.path.join('META-INF', filename))
+            epub_file.write(filename, os.path.join('content', filename))
 
         for story in stories:
             epub_file.write(story['HTMLFilename'], os.path.join('content', story['HTMLFilename']))
@@ -348,12 +355,15 @@ def build_epub(stories, image_filenames):
 
 def build_book():
     stories_filenames = fetch_stories()
-    print 'Found %d stories' % len(stories_filenames)
+    print 'Parsing %d stories' % len(stories_filenames)
     stories, image_filenames = parse_stories(stories_filenames)
     stories = sorted(stories, key=lambda story: story['ParsedDate'])
     download_images(image_filenames)
+    print 'Generating HTML files'
     build_html(stories)
+    print 'Generating ePub file'
     build_epub(stories, image_filenames)
+    print 'Generated Revolution_in_The_Valley.epub'
 
 
 if __name__ == '__main__':
