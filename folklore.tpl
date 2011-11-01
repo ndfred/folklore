@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
 <head>
+<meta charset="utf-8">
 <title>%(Title)s</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<link rel="stylesheet" href="folklore.css"/>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="folklore.css">
 </head>
 <body>
 

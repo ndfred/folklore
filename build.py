@@ -92,9 +92,9 @@ def parse_story_content_tag(tag, content, stories_urls):
         components[0] = urllib.quote(local_image_filename(components[0]))
 
         if components_count == 1:
-            return '<div class="image"><img src="%s"/></div>' % components[0], image_filename
+            return '<div class="image"><img src="%s"></div>' % components[0], image_filename
         elif components_count == 2:
-            return '<div class="image"><img src="%s"/><p>%s</p></div>' % tuple(components), image_filename
+            return '<div class="image"><img src="%s"><p>%s</p></div>' % tuple(components), image_filename
         elif components_count == 3:
             css_class = ''
             description = ''
@@ -105,7 +105,7 @@ def parse_story_content_tag(tag, content, stories_urls):
             if components[1] != '':
                 description = '<p>%s</p>' % components[1]
 
-            return '<div class="image%s"><img src="%s"/>%s</div>' % (css_class, components[0], description), image_filename
+            return '<div class="image%s"><img src="%s">%s</div>' % (css_class, components[0], description), image_filename
         else:
             raise Exception('Wrong arguments for an image tag: %s', content)
     elif tag == 'story':
@@ -345,11 +345,11 @@ def build_epub(stories, image_filenames):
             'HTMLContent': '<div class="cover"><img src="revolution.jpg"/></div>',
         })
 
-        files_entries.append('<item id="cover" href="Cover.html" media-type="application/xhtml+xml"/>')
+        files_entries.append('<item id="cover" href="Cover.html" media-type="text/html"/>')
         book_entries.append('<itemref idref="cover"/>')
 
     for story in stories:
-        files_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="application/xhtml+xml"/>' % story)
+        files_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="text/html"/>' % story)
         book_entries.append('<itemref idref="%s"/>' % story['Identifier'])
         toc_extended_entries.append(
             '<navPoint id="%(Identifier)s" playOrder="%(Index)s">\n'
