@@ -110,7 +110,7 @@ def parse_story_content_tag(tag, content, stories_urls):
             raise Exception('Wrong arguments for an image tag: %s', content)
     elif tag == 'story':
         if components_count == 1:
-            content = content.strip()
+            content = content.strip().lower()
 
             if stories_urls.has_key(content):
                 return '(see <a href="%s">%s</a>)' % (stories_urls[content], content)
@@ -255,7 +255,13 @@ def parse_stories(stories_filenames):
         if story_image_filename:
             image_filenames.add(story_image_filename)
 
-        stories_urls[story['Title']] = story['URL']
+        link_key = story['Title'].lower()
+
+        if story['Title'] == '90 Hours A Week And Loving It!':
+            link_key = link_key[:-1]
+
+        stories_urls[link_key] = story['URL']
+
         stories.append(story)
 
     for story in stories:
