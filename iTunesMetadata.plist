@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>artistName</key>
+	<string>Andy Hertzfeld</string>
+	<key>book-info</key>
+	<dict>
+		<key>mime-type</key>
+		<string>application/epub+zip</string>
+		<key>publisher-unique-id</key>
+		<string>9781449386900</string>
+	</dict>
+	<key>itemName</key>
+	<string>Revolution in The Valley</string>
+	<key>releaseDate</key>
+	<string>2011</string>
+	<key>sort-artist</key>
+	<string>Hertzfeld, Andy</string>
+</dict>
+</plist>
