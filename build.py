@@ -145,6 +145,8 @@ def parse_story_content(story, stories_urls):
         line = line.strip()
 
         if line != '':
+            line = line.replace('&#194;&#160;', ' ')
+
             for tag in ['image', 'story', 'link']:
                 start_tag = '[%s:' % tag
                 end_tag = ']'
