@@ -258,21 +258,22 @@ def build_html(stories):
     with codecs.open('folklore.tpl', 'r', 'utf8') as template_file:
         template = template_file.read()
 
-    sorted_stories = sorted(stories, key=lambda story: story['ParsedDate'])
-
-    for story_index in xrange(len(sorted_stories)):
-        story = sorted_stories[story_index].copy()
+    for story_index in xrange(len(stories)):
+        story = stories[story_index]
+        story['Index'] = str(story_index + 1)
+        story['Identifier'] = 'story-%s' % story['Index']
         footer_components = []
 
         if story_index > 0:
-            footer_components.append('&lt; <a href="%(URL)s">%(Title)s</a>' % sorted_stories[story_index - 1])
+            footer_components.append('&lt; <a href="%(URL)s">%(Title)s</a>' % stories[story_index - 1])
 
         footer_components.append('<a href="Stories.html">Back to the stories</a>')
 
         if story_index < len(stories) - 1:
-            footer_components.append('<a href="%(URL)s">%(Title)s</a> &gt;' % sorted_stories[story_index + 1])
+            footer_components.append('<a href="%(URL)s">%(Title)s</a> &gt;' % stories[story_index + 1])
 
         print ' * %(Title)s (%(Date)s)' % story
+        story = story.copy()
         story['HTMLContent'] += '\n\n<p class="footer">%s</p>' % ' - '.join(footer_components)
         stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
 
@@ -286,12 +287,59 @@ def build_html(stories):
         })
 
 
+def build_epub(stories, image_filenames):
+    index_entries = []
+    toc_entries = []
+    toc_extended_entries = []
+
+    for story in stories:
+        index_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="text/html"/>' % story)
+        toc_entries.append('<itemref idref="%s"/>' % story['Identifier'])
+        toc_extended_entries.append(
+            '<navPoint id="%(Identifier)s" playOrder="%(Index)s">\n'
+            '			<navLabel>\n'
+            '				<text>%(Title)s</text>\n'
+            '			</navLabel>\n'
+            '			<content src="%(HTMLFilename)s"/>\n'
+            '		</navPoint>' % story)
+
+    for image_filename in image_filenames:
+        mime_type = None
+
+        if image_filename.endswith('.jpg') or image_filename.find('.') == -1:
+            mime_type = 'image/jpeg'
+        else:
+            mime_type = 'image/%s' % image_filename[-3:]
+
+        image_filename = local_image_filename(image_filename)
+        index_entries.append('<item id="%s" href="%s" media-type="%s"/>' % (image_filename, image_filename, mime_type))
+
+    with codecs.open('content.opf', 'w', 'utf8') as index_file:
+        with codecs.open('content.opf.tpl', 'r', 'utf8') as index_template_file:
+            index_template = index_template_file.read()
+
+        index_file.write(index_template % {
+            'files': '\n\t\t'.join(index_entries),
+            'toc': '\n\t\t'.join(toc_entries),
+        })
+
+    with codecs.open('toc.ncx', 'w', 'utf8') as toc_file:
+        with codecs.open('toc.ncx.tpl', 'r', 'utf8') as toc_template_file:
+            toc_template = toc_template_file.read()
+
+        toc_file.write(toc_template % {
+            'navmap': '\n\t\t'.join(toc_extended_entries),
+        })
+
+
 def build_book():
     stories_filenames = fetch_stories()
     print 'Found %d stories' % len(stories_filenames)
     stories, image_filenames = parse_stories(stories_filenames)
+    stories = sorted(stories, key=lambda story: story['ParsedDate'])
     download_images(image_filenames)
     build_html(stories)
+    build_epub(stories, image_filenames)
 
 
 if __name__ == '__main__':
