@@ -6,7 +6,7 @@
 		<dc:date>2011</dc:date>
 		<dc:identifier id="p9781449386900">9781449386900</dc:identifier>
 		<dc:language>en</dc:language>
-		<meta name="cover" content="revolution.jpg"/>
+		<meta name="cover" content="%(cover)s"/>
 	</metadata>
 	<manifest>
 		<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>

@@ -270,8 +270,6 @@ def build_html(stories, add_footer=False, add_header=True):
 
     for story_index in xrange(len(stories)):
         story = stories[story_index]
-        story['Index'] = str(story_index + 1)
-        story['Identifier'] = 'story-%s' % story['Index']
 
         if add_header:
             date = story['Date']
@@ -314,6 +312,7 @@ def build_epub(stories, image_filenames):
     book_entries = []
     toc_extended_entries = []
     index_file_hash = None
+    cover_identifier = None
 
     with codecs.open('Cover.html', 'w', 'utf8') as cover_file:
         with codecs.open('folklore.tpl', 'r', 'utf8') as cover_template_file:
@@ -348,6 +347,9 @@ def build_epub(stories, image_filenames):
         else:
             mime_type = 'image/%s' % image_filename[-3:]
 
+        if image_filename == 'revolution.jpg':
+            cover_identifier = 'image-%d' % image_index
+
         image_filename = local_image_filename(image_filename)
         files_entries.append('<item id="image-%d" href="%s" media-type="%s"/>' % (image_index, image_filename, mime_type))
         image_index += 1
@@ -357,6 +359,7 @@ def build_epub(stories, image_filenames):
             index_template = index_template_file.read()
 
         index_file_data = index_template % {
+            'cover': cover_identifier,
             'files': '\n\t\t'.join(files_entries),
             'toc': '\n\t\t'.join(book_entries),
         }
@@ -399,6 +402,11 @@ def build_book():
     print 'Parsing %d stories' % len(stories_filenames)
     stories, image_filenames = parse_stories(stories_filenames)
     stories = sorted(stories, key=lambda story: story['ParsedDate'])
+
+    for story in stories:
+        story['Index'] = stories.index(story)
+        story['Identifier'] = 'story-%s' % story['Index']
+
     download_images(image_filenames)
     print 'Generating HTML files'
     build_html(stories)
