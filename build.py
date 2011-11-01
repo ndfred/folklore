@@ -261,7 +261,7 @@ def download_images(image_filenames):
                 image_file.write(urllib2.urlopen(url).read())
 
 
-def build_html(stories, add_footer=False):
+def build_html(stories, add_footer=False, add_header=True):
     template = None
     stories_html_components = []
 
@@ -272,6 +272,16 @@ def build_html(stories, add_footer=False):
         story = stories[story_index]
         story['Index'] = str(story_index + 1)
         story['Identifier'] = 'story-%s' % story['Index']
+
+        if add_header:
+            date = story['Date']
+            header = 'by %s' % story['Author']
+
+            if date != None and date != 'undated':
+                header += ' in %s' % date
+
+            story = story.copy()
+            story['HTMLContent'] = '\n\n<p class="header">%s</p>\n\n%s' % (header, story['HTMLContent'])
 
         if add_footer:
             footer_components = []

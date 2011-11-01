@@ -12,6 +12,8 @@ h1 {
 	line-height: 1.1em;
 	margin-top: 0;
 	-webkit-hyphens: none;
+	padding: 0em 0em 0.2em 0em;
+	margin: 0em 0em 0em 0em;
 }
 
 a {
@@ -25,6 +27,12 @@ hr {
 	margin-top: 1.5em;
 	margin-bottom: 1.5em;
 	width: 90%;
+}
+
+p.header {
+	font-size: 0.8em;
+	padding: 0em 0em 1em 1em;
+	margin: 0em 0em 0em 0em;
 }
 
 p.footer {
