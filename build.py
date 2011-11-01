@@ -89,9 +89,9 @@ def parse_story_content_tag(tag, content, stories_urls):
         components[0] = urllib.quote(local_image_filename(components[0]))
 
         if components_count == 1:
-            return '<div class="image"><img src="%s"></div>' % components[0], image_filename
+            return '<div class="image"><img src="%s"/></div>' % components[0], image_filename
         elif components_count == 2:
-            return '<div class="image"><img src="%s"><p>%s</p></div>' % tuple(components), image_filename
+            return '<div class="image"><img src="%s"/><p>%s</p></div>' % tuple(components), image_filename
         elif components_count == 3:
             css_class = ''
             description = ''
@@ -102,7 +102,7 @@ def parse_story_content_tag(tag, content, stories_urls):
             if components[1] != '':
                 description = '<p>%s</p>' % components[1]
 
-            return '<div class="image%s"><img src="%s">%s</div>' % (css_class, components[0], description), image_filename
+            return '<div class="image%s"><img src="%s"/>%s</div>' % (css_class, components[0], description), image_filename
         else:
             raise Exception('Wrong arguments for an image tag: %s', content)
     elif tag == 'story':
@@ -304,14 +304,14 @@ def build_epub(stories, image_filenames):
 
         cover_file.write(cover_template % {
             'Title': '',
-            'HTMLContent': '<div class="cover"><img src="revolution.jpg"></div>',
+            'HTMLContent': '<div class="cover"><img src="revolution.jpg"/></div>',
         })
 
-        files_entries.append('<item id="cover" href="Cover.html" media-type="text/html"/>')
+        files_entries.append('<item id="cover" href="Cover.html" media-type="application/xhtml+xml"/>')
         book_entries.append('<itemref idref="cover"/>')
 
     for story in stories:
-        files_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="text/html"/>' % story)
+        files_entries.append('<item id="%(Identifier)s" href="%(HTMLFilename)s" media-type="application/xhtml+xml"/>' % story)
         book_entries.append('<itemref idref="%s"/>' % story['Identifier'])
         toc_extended_entries.append(
             '<navPoint id="%(Identifier)s" playOrder="%(Index)s">\n'
@@ -320,6 +320,8 @@ def build_epub(stories, image_filenames):
             '			</navLabel>\n'
             '			<content src="%(HTMLFilename)s"/>\n'
             '		</navPoint>' % story)
+
+    image_index = 1
 
     for image_filename in image_filenames:
         mime_type = None
@@ -330,7 +332,8 @@ def build_epub(stories, image_filenames):
             mime_type = 'image/%s' % image_filename[-3:]
 
         image_filename = local_image_filename(image_filename)
-        files_entries.append('<item id="%s" href="%s" media-type="%s"/>' % (image_filename, image_filename, mime_type))
+        files_entries.append('<item id="image-%d" href="%s" media-type="%s"/>' % (image_index, image_filename, mime_type))
+        image_index += 1
 
     with codecs.open('content.opf', 'w', 'utf8') as index_file:
         with codecs.open('content.opf.tpl', 'r', 'utf8') as index_template_file:
@@ -352,10 +355,11 @@ def build_epub(stories, image_filenames):
         })
 
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
+        epub_file.writestr('mimetype', 'application/epub+zip')
+
         itunes_plist = plistlib.readPlist('iTunesMetadata.plist')
         itunes_plist['book-info']['package-file-hash'] = index_file_hash
         epub_file.writestr('iTunesMetadata.plist', plistlib.writePlistToString(itunes_plist))
-        epub_file.writestr('mimetype', 'application/epub+zip')
 
         for filename in ['container.xml', 'com.apple.ibooks.display-options.xml']:
             epub_file.write(filename, os.path.join('META-INF', filename))
