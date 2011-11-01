@@ -257,10 +257,22 @@ def build_html(stories):
     with codecs.open('folklore.tpl', 'r', 'utf8') as template_file:
         template = template_file.read()
 
-    for story in sorted(stories, key=lambda story: story['ParsedDate']):
-        story = story.copy()
-        story['HTMLContent'] += '\n\n<p><a href="Stories.html">Back to the stories</a></p>'
+    sorted_stories = sorted(stories, key=lambda story: story['ParsedDate'])
+
+    for story_index in xrange(len(sorted_stories)):
+        story = sorted_stories[story_index].copy()
+        footer_components = []
+
+        if story_index > 0:
+            footer_components.append('&lt; <a href="%(URL)s">%(Title)s</a>' % sorted_stories[story_index - 1])
+
+        footer_components.append('<a href="Stories.html">Back to the stories</a>')
+
+        if story_index < len(stories) - 1:
+            footer_components.append('<a href="%(URL)s">%(Title)s</a> &gt;' % sorted_stories[story_index + 1])
+
         print ' * %(Title)s (%(Date)s)' % story
+        story['HTMLContent'] += '\n\n<p class="footer">%s</p>' % ' - '.join(footer_components)
         stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
 
         with codecs.open(story['URL'], 'w', 'utf8') as story_html_file:
