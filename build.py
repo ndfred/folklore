@@ -7,7 +7,6 @@ import codecs
 import zipfile
 import plistlib
 import hashlib
-import datetime
 
 
 MONTHS = {
@@ -353,11 +352,8 @@ def build_epub(stories, image_filenames):
         })
 
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
-        current_date = datetime.datetime.now()
         itunes_plist = plistlib.readPlist('iTunesMetadata.plist')
         itunes_plist['book-info']['package-file-hash'] = index_file_hash
-        itunes_plist['year'] = current_date.year
-        itunes_plist['releaseDate'] = current_date
         epub_file.writestr('iTunesMetadata.plist', plistlib.writePlistToString(itunes_plist))
         epub_file.writestr('mimetype', 'application/epub+zip')
 

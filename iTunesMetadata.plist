@@ -21,5 +21,9 @@
 	<string>Careers</string>
 	<key>genreId</key>
 	<integer>10010</integer>
+	<key>year</key>
+	<integer>2004</integer>
+	<key>releaseDate</key>
+	<date>2004-12-13T17:07:43Z</date>
 </dict>
 </plist>
