@@ -15,6 +15,3 @@ Run the build.py script to download the data and generate the ePub file:
 
 Script has been tested with python 2.7 on Mac OS X Lion.
 It should be working on Windows and Linux as long as you have python installed.
-
-See the issues for the last glitches to fix, mostly source files encoding issues.
-iBooks is very frustrating to work with when it comes to CSS formatting, some glitches may appear there as well.
