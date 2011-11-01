@@ -250,12 +250,7 @@ def download_images(image_filenames):
                 image_file.write(urllib2.urlopen(url).read())
 
 
-def build_book():
-    stories_filenames = fetch_stories()
-    print 'Found %d stories' % len(stories_filenames)
-    stories, image_filenames = parse_stories(stories_filenames)
-    download_images(image_filenames)
-
+def build_html(stories):
     template = None
     stories_html_components = []
 
@@ -263,6 +258,8 @@ def build_book():
         template = template_file.read()
 
     for story in sorted(stories, key=lambda story: story['ParsedDate']):
+        story = story.copy()
+        story['HTMLContent'] += '\n\n<p><a href="Stories.html">Back to the stories</a></p>'
         print ' * %(Title)s (%(Date)s)' % story
         stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
 
@@ -274,6 +271,14 @@ def build_book():
             'Title': 'folklore.org',
             'HTMLContent': '<p>%s</p>' % '\n'.join(stories_html_components)
         })
+
+
+def build_book():
+    stories_filenames = fetch_stories()
+    print 'Found %d stories' % len(stories_filenames)
+    stories, image_filenames = parse_stories(stories_filenames)
+    download_images(image_filenames)
+    build_html(stories)
 
 
 if __name__ == '__main__':

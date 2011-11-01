@@ -11,6 +11,4 @@
 
 %(HTMLContent)s
 
-<p><a href="Stories.html">Back to the stories</a></p>
-
 </html>
