@@ -1,7 +1,8 @@
-*.html
-*.txt
-*.jpg
-*.gif
-content.opf
-toc.ncx
-Jerrybrown
+/*.html
+/*.txt
+/*.jpg
+/*.gif
+/content.opf
+/toc.ncx
+/Jerrybrown
+/Revolution_in_The_Valley.epub

@@ -4,6 +4,7 @@ import urlparse
 import os.path
 import datetime
 import codecs
+import zipfile
 
 
 MONTHS = {
@@ -330,6 +331,19 @@ def build_epub(stories, image_filenames):
         toc_file.write(toc_template % {
             'navmap': '\n\t\t'.join(toc_extended_entries),
         })
+
+    with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
+        epub_file.write('iTunesMetadata.plist')
+
+        for filename in ['toc.ncx', 'content.opf']:
+            epub_file.write(filename, os.path.join('META-INF', filename))
+
+        for story in stories:
+            epub_file.write(story['HTMLFilename'], os.path.join('content', story['HTMLFilename']))
+
+        for image_filename in image_filenames:
+            image_filename = local_image_filename(image_filename)
+            epub_file.write(image_filename, os.path.join('content', image_filename), zipfile.ZIP_STORED)
 
 
 def build_book():
