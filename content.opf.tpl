@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="p9781449386900">
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="bookid">
 	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
 		<dc:title>Revolution in The Valley</dc:title>
 		<dc:creator>Andy Hertzfeld</dc:creator>
-		<dc:date>2011</dc:date>
-		<dc:identifier id="p9781449386900">9781449386900</dc:identifier>
+		<dc:date>2004</dc:date>
+		<dc:rights>Creative Commons Attribution-NonCommercial 1.0 Generic (CC BY-NC 1.0)</dc:rights>
+		<dc:identifier opf:scheme="ISBN" id="bookid">urn:isbn:9781449386900</dc:identifier>
 		<dc:language>en</dc:language>
 		<meta name="cover" content="%(cover)s"/>
 	</metadata>

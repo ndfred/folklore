@@ -10,8 +10,6 @@
 		<string>application/epub+zip</string>
 		<key>publisher-unique-id</key>
 		<string>9781449386900</string>
-		<key>cover-image-path</key>
-		<string>content/revolution.jpg</string>
 	</dict>
 	<key>itemName</key>
 	<string>Revolution in The Valley</string>
