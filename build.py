@@ -118,7 +118,14 @@ def parse_story_content_tag(tag, content, stories_urls):
             raise Exception('Wrong arguments for a story tag: %s', content)
     elif tag == 'link':
         if components_count == 2:
-            return '<a href="%s">%s</a>' % (components[1], components[0])
+            url = components[1]
+
+            if url.startswith('http//'):
+                url = 'http://%s' % url[6:]
+            else:
+                url = 'http://folklore.org/%s' % url
+
+            return '<a href="%s">%s</a>' % (url, components[0])
         else:
             raise Exception('Wrong arguments for a link tag: %s', content)
 
