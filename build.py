@@ -223,7 +223,8 @@ def parse_stories(stories_filenames):
 
         story, story_image_filename = parse_story(data)
         story['Filename'] = story_filename
-        story['URL'] = '%s.html' % story['Filename'][:-4]
+        story['HTMLFilename'] = '%s.html' % story['Filename'][:-4]
+        story['URL'] = urllib.quote(story['HTMLFilename'])
 
         if story_image_filename:
             image_filenames.add(story_image_filename)
@@ -275,7 +276,7 @@ def build_html(stories):
         story['HTMLContent'] += '\n\n<p class="footer">%s</p>' % ' - '.join(footer_components)
         stories_html_components.append('<li><a href="%(URL)s">%(Title)s</a></li>' % story)
 
-        with codecs.open(story['URL'], 'w', 'utf8') as story_html_file:
+        with codecs.open(story['HTMLFilename'], 'w', 'utf8') as story_html_file:
             story_html_file.write(template % story)
 
     with codecs.open('Stories.html', 'w', 'utf8') as stories_html_file:
