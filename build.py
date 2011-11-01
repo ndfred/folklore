@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf8 -*-
+
 import urllib2
 import urllib
 import urlparse
@@ -145,7 +148,18 @@ def parse_story_content(story, stories_urls):
         line = line.strip()
 
         if line != '':
-            line = line.replace('&#194;&#160;', ' ')
+            line = line.replace(u'&#226;&#128;&#153;', u'’')
+            line = line.replace(u'&#226;&#128;&#148;', u'—')
+            line = line.replace(u'&#226;&#128;&#156;', u'“')
+            line = line.replace(u'&#226;&#128;&#157;', u'”')
+            line = line.replace(u'&#226;&#128;&#152;', u'‘')
+            line = line.replace(u'&#226;&#128;&#147;', u'–')
+            line = line.replace(u'&#226;&#128;&#158;', u'„')
+            line = line.replace(u'&#226;&#128;&#166;', u'…')
+            line = line.replace(u'&#194;&#160;', u' ')
+
+            if line.find('&#') != -1:
+                raise Exception('Found UTF crap in story', story['Title'], line)
 
             for tag in ['image', 'story', 'link']:
                 start_tag = '[%s:' % tag
