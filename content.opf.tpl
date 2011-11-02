@@ -12,6 +12,7 @@
 	<manifest>
 		<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
 		<item id="css" href="folklore.css" media-type="text/css"/>
+		<item id="itunes-metadata" href="../iTunesMetadata.plist" media-type="application/xml"/>
 		%(files)s
 	</manifest>
 	<spine xmlns="http://www.idpf.org/2007/opf" toc="ncx">

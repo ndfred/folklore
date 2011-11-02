@@ -397,7 +397,7 @@ def build_epub(stories, image_filenames):
         })
 
     with zipfile.ZipFile('Revolution_in_The_Valley.epub', 'w', zipfile.ZIP_DEFLATED) as epub_file:
-        epub_file.writestr('mimetype', 'application/epub+zip')
+        epub_file.writestr('mimetype', 'application/epub+zip', zipfile.ZIP_STORED)
 
         itunes_plist = plistlib.readPlist('iTunesMetadata.plist')
         itunes_plist['book-info']['package-file-hash'] = index_file_hash
