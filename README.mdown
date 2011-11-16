@@ -3,9 +3,13 @@ Folklore
 
 Build an ePub out of the [folklore.org](http://folklore.org/index.py) Website by downloading, parsing and reformating its content files.
 
-I got frustated reading [Revolution in The Valley](http://shop.oreilly.com/product/9780596007195.do) as a PDF file in iBooks: even though the editing looks great on paper, the text is fuzzy and small on the iPhone and iPad and zooming in/out in painful.
+I got frustated reading [Revolution in The Valley](http://shop.oreilly.com/product/9780596007195.do) as a PDF file in iBooks: even though the editing looks great on paper, the text is fuzzy and small on the iPhone and iPad and zooming in and out is painful.
 
-Run the build.py script to download the data and generate the ePub file:
+You can [download the pre-compiled book](https://github.com/downloads/ndfred/folklore/Revolution_in_The_Valley.epub) on your iOS device, Mac or PC.
+The publication of this binary version has been kindly approved by Andy Hertzfeld and Allen Noren, his editor at O'Reilly.
+I've been informed that an official ePub version is also on its way.
+
+If you want to build a new copy of the book by downloading the website's content, run the build.py script:
 
     $ python build.py
     Parsing 119 stories
@@ -13,5 +17,5 @@ Run the build.py script to download the data and generate the ePub file:
     Generating ePub file
     Generated Revolution_in_The_Valley.epub
 
-Script has been tested with python 2.7 on Mac OS X Lion.
+The script has been tested with python 2.7 on Mac OS X Lion.
 It should be working on Windows and Linux as long as you have python installed.
